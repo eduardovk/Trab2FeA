@@ -2,10 +2,7 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require './vendor/autoload.php';
-
-$app = new \Slim\App;
-
+require 'bootstrap.php';
 
 $app->get('/evento', function (Request $request, Response $response) use ($app) {
     $return = $response->withJson(['msg' => 'Lista de Eventos'], 200)
