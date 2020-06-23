@@ -12,55 +12,55 @@ class Evento {
     * @Id @Column(type="integer")
     * @GeneratedValue
     */
-    protected $id;
+    public $id;
 
     /**
      * @var string
      * @Column(type="string")
      */
-    protected $titulo;
+    public $titulo;
 
     /**
      * @var string
      * @Column(type="string")
      */
-    protected $descricao;
+    public $descricao;
 
     /**
-     * @var datetime
+     * @var DateTime
      * @Column(type="datetime")
      */
-    protected $data_hora;
+    public $data_hora;
 
     /**
      * @var string
      * @Column(type="string")
      */
-    protected $local;
+    public $local;
 
     /**
      * @var string
      * @Column(type="string")
      */
-    protected $imagem;
+    public $imagem;
 
     /**
      * @var string
      * @Column(type="string")
      */
-    protected $url_amiga;
+    public $url_amiga;
 
     /**
     * @var int
     * @Column(type="integer")
     */
-    protected $id_usuario;
+    public $id_usuario;
 
     /**
     * @var bool
     * @Column(type="boolean")
     */
-    protected $ativo;
+    public $ativo;
 
 
     public function getId(){
