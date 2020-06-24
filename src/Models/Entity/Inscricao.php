@@ -48,6 +48,9 @@ class Inscricao {
     }
 
     public function setIdUsuario($id_usuario){
+        if (!$id_usuario) {
+            throw new \InvalidArgumentException("É necessário informar a ID do usuário da inscrição!", 400);
+        }
         $this->id_usuario = $id_usuario;
         return $this;
     }
@@ -57,6 +60,9 @@ class Inscricao {
     }
 
     public function setIdIngresso($id_ingresso){
+        if (!$id_ingresso) {
+            throw new \InvalidArgumentException("É necessário informar a ID do ingresso da inscrição!", 400);
+        }
         $this->id_ingresso = $id_ingresso;
         return $this;
     }
@@ -66,6 +72,9 @@ class Inscricao {
     }
 
     public function setNome($nome){
+        if (!$nome && !is_string($nome)) {
+            throw new \InvalidArgumentException("É necessário informar o nome na inscrição!", 400);
+        }
         $this->nome = $nome;
         return $this;
     }

@@ -40,7 +40,7 @@ class Evento {
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", nullable=true)
      */
     public $imagem;
 
@@ -72,6 +72,9 @@ class Evento {
     }
 
     public function setTitulo($titulo){
+        if (!$titulo && !is_string($titulo)) {
+            throw new \InvalidArgumentException("É necessário informar o título do evento!", 400);
+        }
         $this->titulo = $titulo;
         return $this;
     }
@@ -81,6 +84,9 @@ class Evento {
     }
 
     public function setDescricao($descricao){
+        if (!$descricao && !is_string($descricao)) {
+            throw new \InvalidArgumentException("É necessário preencher a descrição do evento!", 400);
+        }
         $this->descricao = $descricao;
         return $this;
     }
@@ -90,6 +96,9 @@ class Evento {
     }
 
     public function setDataHora($data_hora){
+        if ($data_hora == null) {
+            throw new \InvalidArgumentException("É necessário informar a data e hora do evento!", 400);
+        }
         $this->data_hora = $data_hora;
         return $this;
     }
@@ -99,6 +108,9 @@ class Evento {
     }
 
     public function setLocal($local){
+        if (!$local && !is_string($local)) {
+            throw new \InvalidArgumentException("É necessário informar o local do evento!", 400);
+        }
         $this->local = $local;
         return $this;
     }
@@ -117,6 +129,9 @@ class Evento {
     }
 
     public function setUrlAmiga($url_amiga){
+        if (!$url_amiga && !is_string($url_amiga)) {
+            throw new \InvalidArgumentException("É necessário informar a URL-amiga do evento!", 400);
+        }
         $this->url_amiga = $url_amiga;
         return $this;
     }
@@ -126,6 +141,9 @@ class Evento {
     }
 
     public function setIdUsuario($id_usuario){
+        if (!$id_usuario) {
+            throw new \InvalidArgumentException("É necessário informar a ID do usuário criador do evento!", 400);
+        }
         $this->id_usuario = $id_usuario;
         return $this;
     }

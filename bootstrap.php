@@ -5,7 +5,22 @@ require './vendor/autoload.php';
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-$container = new \Slim\Container();
+$configs = [
+    'settings' => [
+        'displayErrorDetails' => true,
+    ],
+];
+
+$container = new \Slim\Container($configs);
+
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $exception) use ($c) {
+        $statusCode = $exception->getCode() ? $exception->getCode() : 500;
+        return $c['response']->withStatus($statusCode)
+        ->withHeader('Content-Type', 'Application/json')
+        ->withJson(["message" => $exception->getMessage()], $statusCode);
+    };
+};
 
 $isDevMode = true;
 

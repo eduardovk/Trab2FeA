@@ -24,6 +24,10 @@ $app->get('/evento/{id}', function (Request $request, Response $response) use ($
     $eventosRepository = $entityManager->getRepository('App\Models\Entity\Evento');
     $evento = $eventosRepository->find($id);
 
+    if(!$evento){
+        throw new \Exception("Evento não encontrado", 404);
+    }
+
     $return = $response->withJson($evento, 200)
         ->withHeader('Content-type', 'application/json');
     return $return;
@@ -67,6 +71,10 @@ $app->put('/evento/{id}', function (Request $request, Response $response) use ($
     $eventosRepository = $entityManager->getRepository('App\Models\Entity\Evento');
     $evento = $eventosRepository->find($id);
 
+    if(!$evento){
+        throw new \Exception("Evento não encontrado", 404);
+    }
+
     $evento->setTitulo($params->titulo)
     ->setDescricao($params->descricao)
     ->setDataHora(new DateTime($params->data_hora))
@@ -92,6 +100,10 @@ $app->delete('/evento/{id}', function (Request $request, Response $response) use
   $entityManager = $this->get('em');
   $eventosRepository = $entityManager->getRepository('App\Models\Entity\Evento');
   $evento = $eventosRepository->find($id);
+
+  if(!$evento){
+      throw new \Exception("Evento não encontrado", 404);
+  }
 
   $entityManager->remove($evento);
   $entityManager->flush();

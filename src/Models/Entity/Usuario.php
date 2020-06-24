@@ -28,7 +28,7 @@ class Usuario {
 
     /**
      * @var string
-     * @Column(type="string", length=14)
+     * @Column(type="string", length=14, nullable=true)
      */
     public $cpf;
 
@@ -54,6 +54,9 @@ class Usuario {
     }
 
     public function setNome($nome){
+        if (!$nome && !is_string($nome)) {
+            throw new \InvalidArgumentException("É necessário informar o nome do usuário!", 400);
+        }
         $this->nome = $nome;
         return $this;
     }
@@ -63,6 +66,9 @@ class Usuario {
     }
 
     public function setEmail($email){
+        if (!$email && !is_string($email)) {
+            throw new \InvalidArgumentException("É necessário informar o e-mail do usuário!", 400);
+        }
         $this->email = $email;
         return $this;
     }
@@ -81,6 +87,9 @@ class Usuario {
     }
 
     public function setSenha($senha){
+        if (!$senha && !is_string($senha)) {
+            throw new \InvalidArgumentException("É necessário informar a senha do usuário!", 400);
+        }
         $this->senha = $senha;
         return $this;
     }

@@ -53,15 +53,22 @@ class CategoriaIngresso {
     }
 
     public function setIdEvento($id_evento){
+        if (!$id_evento) {
+            throw new \InvalidArgumentException("É necessário informar a ID do evento no ingresso!", 400);
+        }
         $this->id_evento = $id_evento;
         return $this;
     }
 
     public function getTitulo(){
+
         return $this->titulo;
     }
 
     public function setTitulo($titulo){
+        if (!$titulo && !is_string($titulo)) {
+            throw new \InvalidArgumentException("É necessário informar o título do ingresso!", 400);
+        }
         $this->titulo = $titulo;
         return $this;
     }
@@ -71,6 +78,9 @@ class CategoriaIngresso {
     }
 
     public function setValor($valor){
+        if (!$valor) {
+            throw new \InvalidArgumentException("É necessário informar o valor do ingresso!", 400);
+        }
         $this->valor = $valor;
         return $this;
     }
@@ -80,6 +90,9 @@ class CategoriaIngresso {
     }
 
     public function setQtd($qtd){
+        if (!$valor) {
+            throw new \InvalidArgumentException("É necessário informar a quantidade do ingresso!", 400);
+        }
         $this->qtd = $qtd;
         return $this;
     }
