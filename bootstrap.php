@@ -4,6 +4,7 @@ require './vendor/autoload.php';
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Psr7Middlewares\Middleware\TrailingSlash;
 
 $configs = [
     'settings' => [
@@ -33,3 +34,5 @@ $entityManager = EntityManager::create($conn, $config);
 $container['em'] = $entityManager;
 
 $app = new \Slim\App($container);
+
+$app->add(new TrailingSlash(false));

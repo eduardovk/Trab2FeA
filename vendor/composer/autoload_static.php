@@ -35,6 +35,7 @@ class ComposerStaticInit9d2677e10022376ba69b2e937cc379de
         array (
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Psr7Middlewares\\' => 16,
             'PackageVersions\\' => 16,
         ),
         'I' => 
@@ -113,6 +114,10 @@ class ComposerStaticInit9d2677e10022376ba69b2e937cc379de
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Psr7Middlewares\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/oscarotero/psr7-middlewares/src',
         ),
         'PackageVersions\\' => 
         array (
