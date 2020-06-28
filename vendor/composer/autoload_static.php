@@ -33,10 +33,15 @@ class ComposerStaticInit9d2677e10022376ba69b2e937cc379de
         ),
         'P' => 
         array (
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
             'Psr7Middlewares\\' => 16,
             'PackageVersions\\' => 16,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
         ),
         'I' => 
         array (
@@ -107,6 +112,10 @@ class ComposerStaticInit9d2677e10022376ba69b2e937cc379de
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -122,6 +131,10 @@ class ComposerStaticInit9d2677e10022376ba69b2e937cc379de
         'PackageVersions\\' => 
         array (
             0 => __DIR__ . '/..' . '/ocramius/package-versions/src/PackageVersions',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Interop\\Container\\' => 
         array (

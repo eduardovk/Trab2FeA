@@ -23,6 +23,17 @@ $container['errorHandler'] = function ($c) {
     };
 };
 
+$container['logger'] = function($container) {
+    $logger = new Monolog\Logger('logs');
+    $logfile = __DIR__ . '/log/logs.log';
+    $stream = new Monolog\Handler\StreamHandler($logfile, Monolog\Logger::DEBUG);
+    $fingersCrossed = new Monolog\Handler\FingersCrossedHandler(
+        $stream, Monolog\Logger::INFO);
+    $logger->pushHandler($fingersCrossed);
+
+    return $logger;
+};
+
 $isDevMode = true;
 
 $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src/Models/Entity"), $isDevMode);

@@ -25,6 +25,8 @@ $app->get('/evento/{id}', function (Request $request, Response $response) use ($
     $evento = $eventosRepository->find($id);
 
     if(!$evento){
+        $logger = $this->get('logger');
+        $logger->warning("Evento {$id} não encontrado!");
         throw new \Exception("Evento não encontrado", 404);
     }
 
@@ -56,6 +58,9 @@ $app->post('/evento', function (Request $request, Response $response) use ($app)
     $entityManager->persist($evento);
     $entityManager->flush();
 
+    $logger = $this->get('logger');
+    $logger->info('Evento cadastrado!', null);
+
     $return = $response->withJson($evento, 201)
         ->withHeader('Content-type', 'application/json');
     return $return;
@@ -71,7 +76,10 @@ $app->put('/evento/{id}', function (Request $request, Response $response) use ($
     $eventosRepository = $entityManager->getRepository('App\Models\Entity\Evento');
     $evento = $eventosRepository->find($id);
 
+    $logger = $this->get('logger');
+
     if(!$evento){
+        $logger->warning("Evento {$id} não encontrado - Não foi possível atualizar!");
         throw new \Exception("Evento não encontrado", 404);
     }
 
@@ -87,6 +95,8 @@ $app->put('/evento/{id}', function (Request $request, Response $response) use ($
     $entityManager->persist($evento);
     $entityManager->flush();
 
+    $logger->info("Evento {$id} atualizado!", array($evento));
+
     $return = $response->withJson($evento, 200)
         ->withHeader('Content-type', 'application/json');
     return $return;
@@ -101,12 +111,17 @@ $app->delete('/evento/{id}', function (Request $request, Response $response) use
   $eventosRepository = $entityManager->getRepository('App\Models\Entity\Evento');
   $evento = $eventosRepository->find($id);
 
+  $logger = $this->get('logger');
+
   if(!$evento){
+      $logger->warning("Evento {$id} não encontrado - Não foi possível deletar!");
       throw new \Exception("Evento não encontrado", 404);
   }
 
   $entityManager->remove($evento);
   $entityManager->flush();
+
+  $logger->info("Evento {$id} deletado!", array($evento));
 
   $return = $response->withJson(['msg' => "Deletado o evento {$id}"], 204)
       ->withHeader('Content-type', 'application/json');
