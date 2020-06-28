@@ -2,8 +2,21 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use App\Models\Entity\Evento;
+use Firebase\JWT\JWT;
 
 require 'bootstrap.php';
+
+$app->get('/auth', function (Request $request, Response $response) use ($app) {
+
+    $key = $this->get("secretkey");
+
+    $token = "teste_token_jwt";
+
+    $jwt = JWT::encode($token, $key);
+
+    return $response->withJson(["auth-jwt" => $jwt], 200)
+        ->withHeader('Content-type', 'application/json');
+});
 
 $app->get('/evento', function (Request $request, Response $response) use ($app) {
     $entityManager = $this->get('em');

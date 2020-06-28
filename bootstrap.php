@@ -64,6 +64,31 @@ $entityManager = EntityManager::create($conn, $config);
 
 $container['em'] = $entityManager;
 
+$container['secretkey'] = "chavesecreta";
+
 $app = new \Slim\App($container);
 
 $app->add(new TrailingSlash(false));
+
+/*
+$app->add(new \Slim\Middleware\HttpBasicAuthentication([
+    "users" => [
+        "eduardo" => "abc123"
+    ],
+    "path" => ["/auth"],
+]));*/
+$app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
+    "users" => [
+        "eduardo" => "abc123"
+    ],
+    "path" => ["/auth"],
+]));
+
+$app->add(new Tuupola\Middleware\JwtAuthentication([
+    "regexp" => "/(.*)/", //Regex para encontrar o Token nos Headers - Livre
+    "header" => "X-Token", //O Header que vai conter o token
+    "path" => "/", //Vamos cobrir toda a API a partir do /
+    "ignore" => ["/auth"], //Vamos adicionar a exceção de cobertura a rota /auth
+    "realm" => "Protected",
+    "secret" => $container['secretkey'] //Nosso secretkey criado
+]));
