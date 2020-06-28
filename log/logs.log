@@ -1,3 +1,6 @@
 [2020-06-27T22:54:32.306856+00:00] logs.WARNING: Evento 4 não encontrado! [] []
 [2020-06-27T22:55:56.235857+00:00] logs.WARNING: Evento 5 não encontrado - Não foi possível atualizar! [] []
 [2020-06-27T23:19:43.229473+00:00] logs.INFO: Evento 1 atualizado! [{"App\\Models\\Entity\\Evento":{"id":1,"titulo":"Teste Evento PUT 2","descricao":"Descricao do Evento 2","data_hora":{"date":"2020-06-27 20:50:00.000000","timezone_type":3,"timezone":"UTC"},"local":"Local do Evento 2","imagem":"nenhuma 2","url_amiga":"teste-evento-put","id_usuario":"1","ativo":"1"}}] []
+[2020-06-28T00:30:10.789775+00:00] logs.WARNING: Evento 6 não encontrado! [] []
+[2020-06-28T00:36:04.136509+00:00] logs.WARNING: Evento 6 não encontrado! [] []
+[2020-06-28T00:36:06.597580+00:00] logs.WARNING: Evento 6i não encontrado! [] []

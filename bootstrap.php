@@ -23,6 +23,26 @@ $container['errorHandler'] = function ($c) {
     };
 };
 
+$container['notAllowedHandler'] = function ($c) {
+    return function ($request, $response, $methods) use ($c) {
+        return $c['response']
+            ->withStatus(405)
+            ->withHeader('Allow', implode(', ', $methods))
+            ->withHeader('Content-Type', 'Application/json')
+            ->withHeader("Access-Control-Allow-Methods", implode(",", $methods))
+            ->withJson(["message" => "Method not Allowed; Method must be one of: " . implode(', ', $methods)], 405);
+    };
+};
+
+$container['notFoundHandler'] = function ($container) {
+    return function ($request, $response) use ($container) {
+        return $container['response']
+            ->withStatus(404)
+            ->withHeader('Content-Type', 'Application/json')
+            ->withJson(['message' => 'Page not found']);
+    };
+};
+
 $container['logger'] = function($container) {
     $logger = new Monolog\Logger('logs');
     $logfile = __DIR__ . '/log/logs.log';
