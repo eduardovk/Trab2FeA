@@ -15,6 +15,12 @@ class Usuario {
     public $id;
 
     /**
+    * @var string
+    * @Column(type="string")
+    */
+    public $fb_ID;
+
+    /**
      * @var string
      * @Column(type="string")
      */
@@ -47,6 +53,18 @@ class Usuario {
 
     public function getId(){
         return $this->id;
+    }
+
+    public function getFbID(){
+        return $this->fb_ID;
+    }
+
+    public function setFbID($fb_ID){
+        if (!$fb_ID && !is_string($fb_ID)) {
+            throw new \InvalidArgumentException("É necessário informar o Facebook ID do usuário!", 400);
+        }
+        $this->fb_ID = $fb_ID;
+        return $this;
     }
 
     public function getNome(){
@@ -87,9 +105,6 @@ class Usuario {
     }
 
     public function setSenha($senha){
-        if (!$senha && !is_string($senha)) {
-            throw new \InvalidArgumentException("É necessário informar a senha do usuário!", 400);
-        }
         $this->senha = $senha;
         return $this;
     }
@@ -98,7 +113,7 @@ class Usuario {
         return $this->admin;
     }
 
-    public function setAdmin($Admin){
+    public function setAdmin($admin){
         $this->admin = $admin;
         return $this;
     }

@@ -39,6 +39,7 @@ class Inscricao {
     public $pago;
 
 
+
     public function getId(){
         return $this->id;
     }

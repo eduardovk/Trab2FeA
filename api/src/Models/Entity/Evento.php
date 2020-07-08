@@ -62,6 +62,7 @@ class Evento {
     */
     public $ativo;
 
+    public $ingressos;
 
     public function getId(){
         return $this->id;

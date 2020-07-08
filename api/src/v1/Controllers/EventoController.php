@@ -5,6 +5,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 use App\Models\Entity\Evento;
+use App\Models\Entity\CategoriaIngresso;
 
 class EventoController {
 
@@ -87,6 +88,18 @@ class EventoController {
             $logger = $this->container->get('logger');
             $logger->warning("Evento {$id} nao encontrado!");
             throw new \Exception("Evento nao encontrado", 404);
+        }else{
+            $ingressosRepo = $entityManager->getRepository('App\Models\Entity\CategoriaIngresso');
+            $ingressos = $ingressosRepo->findBy(array('id_evento' => $id));
+            if($ingressos){
+                foreach($ingressos as $ingresso){
+                    $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
+                    $inscricoes = $inscricoesRepo->findBy(array('id_ingresso' => $ingresso->getId()));
+                    $qtd_inscricoes = count($inscricoes);
+                    $ingresso->qtd_restante = $ingresso->getQtd() - $qtd_inscricoes;
+                }
+                $evento->ingressos = $ingressos;
+            }
         }
 
         $return = $response->withJson($evento, 200)
