@@ -24,9 +24,12 @@
     <!-- TEMPLATE EVENTOS CONTAINER -->
     <template id="eventos-container">
         <span>
-            <span v-bind:eventos="eventos" v-for="evento in eventos">
-                <evento v-bind:evento="evento" :key="evento.id"></evento>
-            </span>
+            <template v-if="this.$parent.loading">Carregando...</template>
+            <template v-else>
+                <span v-bind:eventos="eventos" v-for="evento in eventos">
+                    <evento v-bind:evento="evento" :key="evento.id"></evento>
+                </span>
+            </template>
         </span>
     </template>
     <!-- //TEMPLATE EVENTOS CONTAINER -->
@@ -37,19 +40,71 @@
             <div class="col-md-12"><br></div>
             <div class="col-md-7">
                 <a href="#">
-                    <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;"  src="/img/eventos/default.png" alt="">
+                    <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;"  src="/img/eventos/default.png">
                 </a>
             </div>
             <div class="col-md-5">
                 <h4>{{evento.titulo}}</h4>
                 <p><b>Data:</b> {{data_formatada}}<br><b>Horário:</b> {{hora_formatada}}</p>
                 <p>{{evento.descricao}}</p>
-                <a class="btn btn-danger btn-sm" href="#">Ver mais</a></p>
+                <router-link :to="{name:'evento', params: {id: evento.id}}" class="btn btn-danger btn-sm">Ver mais</router-link>
             </div>
             <div class="col-md-12 mb-12"><br><hr></div>
         </span>
     </template>
     <!-- //TEMPLATE EVENTO -->
+
+    <!-- TEMPLATE EVENTO DETALHES -->
+    <template id="evento-detalhes">
+        <span>
+            <span v-if="loading">Carregando...</span>
+            <span v-else>
+                <div class="row my-4">
+                    <div class="col-md-7">
+                        <a href="#">
+                            <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;" src="/img/eventos/default.png">
+                        </a>
+                    </div>
+                    <div class="col-md-5">
+                        <br>
+                        <h5>{{evento.titulo}}</h5>
+                        <p><b>Data:</b> {{data_formatada}}<br><b>Horário:</b> {{hora_formatada}}</p>
+                        <p><b>Local do evento:</b><br> {{evento.local}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">SOBRE O EVENTO</h5>
+                                <hr>
+                                <p class="card-text">{{evento.descricao}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">INGRESSOS</h5>
+                                <hr>
+                                <template v-for="ingresso in evento.ingressos">
+                                    <p class="card-text"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</p>
+                                </template>
+                                <template v-if="this.$parent.logado">
+                                    <a href="eventos/ingressos/id-evento" class="btn btn-danger btn-sm" style="margin-right:5px;margin-top:5px;">Inscreva-se</a>
+                                </template>
+                                <template><b>Faça Login para se inscrever!</b></template><br>
+                                <router-link to="/eventos" class="btn btn-danger btn-sm" style="margin-top: 20px;">< Voltar</router-link>
+                            </div>
+                        </div><br>
+                    </div>
+                </div>
+            </span>
+        </span>
+    </template>
+    <!-- //TEMPLATE EVENTO DETALHES -->
 
     <script src="/js/jquery-3.5.0.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
@@ -79,6 +134,37 @@
         template: '#eventos-container'
     });
 
+    var eventoDetalhes = Vue.component('evento-detalhes', {
+        data: function () {
+            return {
+                loading: true,
+                evento: null
+            }
+        },
+        computed: {
+            data_formatada: function(){
+                return formatarData(this.evento.data_hora.date)
+            },
+            hora_formatada: function(){
+                return formatarHora(this.evento.data_hora.date)
+            }
+        },
+        created: function(){
+            var instancia = this;
+            axios.get('/api/v1/evento/'+instancia.$route.params.id)
+            .then(function (response) {
+                instancia.evento = response.data;
+                instancia.loading = false;
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            .then(function () {
+            });
+        },
+        template: '#evento-detalhes'
+    });
+
     var evento = Vue.component('evento',{
         props: ['evento'],
         computed: {
@@ -94,7 +180,8 @@
 
     const routes = [
         {path: '/', name:'eventos', component: eventosContainer},
-        {path: '/eventos', name:'eventos', component: eventosContainer}
+        {path: '/eventos', name:'eventos', component: eventosContainer},
+        {path: '/evento/:id', name:'evento', component: eventoDetalhes},
     ];
 
     const router = new VueRouter({routes, mode:'history'});
@@ -103,13 +190,18 @@
         el: '#app',
         data: {
             eventos:null,
-            loading: false
+            logado: false,
+            loading: true
         },
         created: function(){
+            if(localStorage.getItem('userName') && localStorage.getItem('userName') !== ''){
+                logado = true;
+            }
             var instancia = this;
             axios.get('/api/v1/evento')
             .then(function (response) {
                 instancia.eventos = response.data;
+                instancia.loading = false;
             })
             .catch(function (error) {
                 console.log(error);
