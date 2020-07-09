@@ -21,26 +21,35 @@
         </div>
     </div>
 
-
+    <!-- TEMPLATE EVENTOS CONTAINER -->
     <template id="eventos-container">
-        <div class="row">
-            <template v-bind:eventos="eventos" v-for="evento in eventos">
-                <div class="col-md-12"><br></div>
-                <div class="col-md-7">
-                    <a href="#">
-                        <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;"  src="/img/eventos/default.png" alt="">
-                    </a>
-                </div>
-                <div class="col-md-5">
-                    <h4>{{evento.titulo}}</h4>
-                    <p><b>Data:</b> {{evento.data_hora}}<br><b>Horário:</b> {{evento.dara_hora}}</p>
-                    <p>{{evento.descricao}}</p>
-                    <a class="btn btn-danger btn-sm" href="#">Ver mais</a></p>
-                </div>
-                <div class="col-md-12 mb-12"><br><hr></div>
-            </template>
-        </div>
+        <span>
+            <span v-bind:eventos="eventos" v-for="evento in eventos">
+                <evento v-bind:evento="evento" :key="evento.id"></evento>
+            </span>
+        </span>
     </template>
+    <!-- //TEMPLATE EVENTOS CONTAINER -->
+
+    <!-- TEMPLATE EVENTO -->
+    <template id="evento">
+        <span class="row">
+            <div class="col-md-12"><br></div>
+            <div class="col-md-7">
+                <a href="#">
+                    <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;"  src="/img/eventos/default.png" alt="">
+                </a>
+            </div>
+            <div class="col-md-5">
+                <h4>{{evento.titulo}}</h4>
+                <p><b>Data:</b> {{data_formatada}}<br><b>Horário:</b> {{hora_formatada}}</p>
+                <p>{{evento.descricao}}</p>
+                <a class="btn btn-danger btn-sm" href="#">Ver mais</a></p>
+            </div>
+            <div class="col-md-12 mb-12"><br><hr></div>
+        </span>
+    </template>
+    <!-- //TEMPLATE EVENTO -->
 
     <script src="/js/jquery-3.5.0.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
@@ -51,17 +60,40 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="text/javascript">
 
+    function formatarData(data){
+        return $.format.date(data, "dd/MM/yyyy")
+    }
+
+    function formatarHora(hora){
+        return $.format.date(hora, "HH:mm")
+    }
+
     var eventosContainer = Vue.component('eventos-container', {
         props: ['eventos'],
         data: function () {
             return {
-                loading: false
+                loading: false,
+                evento: null
             }
         },
         template: '#eventos-container'
     });
 
+    var evento = Vue.component('evento',{
+        props: ['evento'],
+        computed: {
+            data_formatada: function(){
+                return formatarData(this.evento.data_hora.date)
+            },
+            hora_formatada: function(){
+                return formatarHora(this.evento.data_hora.date)
+            }
+        },
+        template: '#evento'
+    });
+
     const routes = [
+        {path: '/', name:'eventos', component: eventosContainer},
         {path: '/eventos', name:'eventos', component: eventosContainer}
     ];
 
