@@ -50,3 +50,12 @@ function requestAPI(){
         }
     })
 }
+
+function logOut(){
+    localStorage.clear();
+    app.logado = false;
+    app.user.userName = null;
+    app.user.userToken = null;
+    app.user.userID = null;
+    app.user.email = null;
+}

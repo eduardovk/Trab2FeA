@@ -17,8 +17,15 @@
         <!-- NAV AQUI -->
 
         <div class="container container-white" style="margin-top: 20px;">
+            <span v-if="logado">
+                <button type="button" name="button" onclick="logOut()"> Sair</button>
+            </span>
+            <span v-show="!logado">
+                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+            </span>
             <router-view v-bind:eventos="eventos"></router-view>
         </div>
+
     </div>
 
     <!-- TEMPLATE EVENTOS CONTAINER -->
@@ -95,7 +102,7 @@
                                 <template v-if="this.$parent.logado">
                                     <a href="eventos/ingressos/id-evento" class="btn btn-danger btn-sm" style="margin-right:5px;margin-top:5px;">Inscreva-se</a>
                                 </template>
-                                <template><b>Faça Login para se inscrever!</b></template><br>
+                                <template v-else><b>Faça Login para se inscrever!</b></template><br>
                                 <router-link to="/eventos" class="btn btn-danger btn-sm" style="margin-top: 20px;">< Voltar</router-link>
                             </div>
                         </div><br>
@@ -191,11 +198,17 @@
         data: {
             eventos:null,
             logado: false,
-            loading: true
+            loading: true,
+            user: {
+                userName: null,
+                userToken: null,
+                userID: null,
+                email: null
+            }
         },
         created: function(){
             if(localStorage.getItem('userName') && localStorage.getItem('userName') !== ''){
-                logado = true;
+                this.logado = true;
             }
             var instancia = this;
             axios.get('/api/v1/evento')
