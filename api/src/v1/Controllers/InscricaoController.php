@@ -80,10 +80,12 @@ class InscricaoController {
             $id_usuario = UsuarioController::criarUsuario($parametros, $entityManager, $this->container->get('logger'));
         }
 
+        $pago = 0;
+
         $inscricao = (new Inscricao())->setIdUsuario($id_usuario)
         ->setIdIngresso($request->getParam('id_ingresso'))
         ->setNome($request->getParam('nome'))
-        ->setPago($request->getParam('pago'));
+        ->setPago($pago);
 
         $entityManager->persist($inscricao);
         $entityManager->flush();

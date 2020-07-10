@@ -21,11 +21,10 @@
                 <button type="button" name="button" onclick="logOut()"> Sair</button>
             </span>
             <span v-show="!logado">
-                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" v-pre></fb:login-button>
             </span>
             <router-view v-bind:eventos="eventos"></router-view>
         </div>
-
     </div>
 
     <!-- TEMPLATE EVENTOS CONTAINER -->
@@ -97,10 +96,29 @@
                                 <h5 class="card-title">INGRESSOS</h5>
                                 <hr>
                                 <template v-for="ingresso in evento.ingressos">
-                                    <p class="card-text"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</p>
+                                    <template v-if="ingresso.qtd_restante > 0">
+                                        <template v-if="$root.logado">
+                                            <p class="card-text">
+                                                <input type="radio" name="cat_ingresso" :id="ingresso.id" :value="ingresso.id" v-model="$root.tipo_ingresso">
+                                                <label :for="ingresso.id"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</label>
+                                            </p>
+                                        </template>
+                                        <template v-else>
+                                            <p class="card-text"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</p>
+                                        </template>
+                                    </template>
+                                    <template v-else>
+                                        <p class="card-text"> (Esgotado) <s>{{ingresso.titulo}} - R$ {{ingresso.valor}}</s> </p>
+                                    </template>
                                 </template>
                                 <template v-if="this.$parent.logado">
-                                    <a href="eventos/ingressos/id-evento" class="btn btn-danger btn-sm" style="margin-right:5px;margin-top:5px;">Inscreva-se</a>
+                                    <input type="text" id="nome" v-model="$root.nome_inscrito" placeholder="Nome do Inscrito"><br>
+                                    <template v-if="$root.loading">
+                                        <img src="/img/loader.gif">
+                                    </template>
+                                    <template v-else>
+                                        <button @click="this.$parent.inscrever" href="eventos/ingressos/id-evento" class="btn btn-danger btn-sm" style="margin-right:5px;margin-top:35px;">Inscreva-se</button>
+                                    </template>
                                 </template>
                                 <template v-else><b>Faça Login para se inscrever!</b></template><br>
                                 <router-link to="/eventos" class="btn btn-danger btn-sm" style="margin-top: 20px;">< Voltar</router-link>
@@ -204,11 +222,17 @@
                 userToken: null,
                 userID: null,
                 email: null
-            }
+            },
+            tipo_ingresso: null,
+            nome_inscrito: null
         },
         created: function(){
             if(localStorage.getItem('userName') && localStorage.getItem('userName') !== ''){
                 this.logado = true;
+                this.user.userName = localStorage.getItem('userName');
+                this.user.userToken = localStorage.getItem('userToken');
+                this.user.userID = localStorage.getItem('userID');
+                this.user.email = localStorage.getItem('email');
             }
             var instancia = this;
             axios.get('/api/v1/evento')
@@ -221,6 +245,35 @@
             })
             .then(function () {
             });
+        },
+        methods: {
+            inscrever: function(){
+                this.loading = true;
+                if ($("input[name='cat_ingresso']:checked").val()) {
+                    if($.trim($('#nome').val()) !== ''){
+                        var instancia = this;
+                        axios.post('/api/v1/inscricao', {
+                            fb_ID: instancia.user.userID,
+                            nome: instancia.nome_inscrito,
+                            email: instancia.user.email,
+                            id_ingresso: instancia.tipo_ingresso
+                        })
+                        .then(function (response) {
+                            instancia.loading = false;
+                            alert('Inscrição realizada com sucesso!');
+                        })
+                        .catch(function (error) {
+                            instancia.loading = false;
+                            console.log(error);
+                        });
+                    }else{
+                        alert('Informe o nome do inscrito!');
+                    }
+                }
+                else {
+                    alert('Selecione o tipo de ingresso!');
+                }
+            }
         },
         router
     });

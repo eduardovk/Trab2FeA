@@ -36,3 +36,7 @@
 [2020-07-08T20:16:52.247811+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":16,"id_usuario":9,"id_ingresso":3,"nome":"aaaassssss","pago":0}}] []
 [2020-07-08T22:20:44.591850+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":17,"id_usuario":9,"id_ingresso":3,"nome":"3434343434","pago":0}}] []
 [2020-07-08T22:21:38.761135+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":18,"id_usuario":9,"id_ingresso":2,"nome":"uuuuuuuui","pago":0}}] []
+[2020-07-10T23:04:41.926595+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":19,"id_usuario":9,"id_ingresso":2,"nome":"Siclano","pago":0}}] []
+[2020-07-10T23:06:28.780751+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":20,"id_usuario":9,"id_ingresso":2,"nome":"Siclano","pago":0}}] []
+[2020-07-10T23:09:00.454579+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":21,"id_usuario":9,"id_ingresso":3,"nome":"Harry Potter","pago":0}}] []
+[2020-07-10T23:09:14.581447+00:00] logs.INFO: Inscricao criada! [{"App\\Models\\Entity\\Inscricao":{"id":22,"id_usuario":9,"id_ingresso":3,"nome":"Harry Potter","pago":0}}] []
