@@ -14,7 +14,7 @@
 <body>
 
     <!-- VUE APP -->
-    <div id="app">
+    <div id="app" class="container container-white" style="margin-top: 20px;">
         <!-- NAVBAR -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container">
@@ -38,7 +38,7 @@
                                     <b>{{user.userName}}</b>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
-                                    <router-link :to="{name:'inscricoes', params: {id: user.fb_ID}}" class="dropdown-item">Minhas Inscrições</router-link>
+                                    <router-link :to="{name:'inscricoes', params: {id: user.userID}}" class="dropdown-item">Minhas Inscrições</router-link>
                                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); logOut()">Sair</a>
                                 </div>
                             </li>
@@ -55,11 +55,6 @@
         <!-- //NAVBAR -->
         <!-- MAIN CONTAINER -->
         <div class="container container-white" style="margin-top: 20px 0px 0px 10px;">
-            <span v-if="logado">
-                <button type="button" name="button" onclick="logOut()"> Sair</button>
-            </span>
-            <span v-show="!logado">
-            </span>
             <router-view v-bind:eventos="eventos"></router-view>
         </div>
         <!-- //MAIN CONTAINER -->
@@ -170,6 +165,44 @@
     </template>
     <!-- //TEMPLATE EVENTO DETALHES -->
 
+    <!-- TEMPLATE INSCRICOES -->
+    <template id="inscricoes-container">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card h-100">
+                    <template v-if="loading">
+                        Carregando...
+                    </template>
+                    <template v-else>
+                        <div class="card-body table-responsive">
+                            <h5 class="card-title">MINHAS INSCRIÇÕES</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Evento</th>
+                                    <th>Inscrito</th>
+                                    <th>Tipo de Ingresso</th>
+                                    <th>Valor</th>
+                                    <th>Pago</th>
+                                </tr>
+                                <template v-for="inscricao in inscricoes">
+                                    <tr>
+                                        <td>{{inscricao.titulo_evento}}</td>
+                                        <td>{{inscricao.nome}}</td>
+                                        <td>{{inscricao.titulo_ingresso}}</td>
+                                        <td>R$ {{inscricao.valor}}</td>
+                                        <td>{{inscricao.pago}}</td>
+                                    </tr>
+                                </template>
+                            </table>
+                        </div>
+                    </template>
+                </div><br>
+            </div>
+            <router-link to="/eventos" class="btn btn-danger btn-sm" style="margin: 20px 0px 20px 15px;">< Voltar</router-link>
+        </div>
+    </template>
+    <!-- //TEMPLATE INSCRICOES -->
+
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/fblogin.js"></script>
     <script src="/js/jquery-dateFormat.min.js"></script>
@@ -241,10 +274,35 @@
         template: '#evento'
     });
 
+    var inscricoesContainer = Vue.component('inscricoes-container', {
+        data: function () {
+            return {
+                inscricoes: null,
+                loading: true,
+            }
+        },
+        created: function(){
+            var instancia = this;
+            axios.get('/api/v1/inscricao/'+instancia.$route.params.id)
+            .then(function (response) {
+                instancia.inscricoes = response.data;
+                instancia.loading = false;
+            })
+            .catch(function (error) {
+                console.log(error);
+                instancia.loading = false;
+            })
+            .then(function () {
+            });
+        },
+        template: '#inscricoes-container'
+    });
+
     const routes = [
         {path: '/', name:'eventos', component: eventosContainer},
         {path: '/eventos', name:'eventos', component: eventosContainer},
         {path: '/evento/:id', name:'evento', component: eventoDetalhes},
+        {path: '/inscricoes/:id', name:'inscricoes', component: inscricoesContainer},
     ];
 
     const router = new VueRouter({routes, mode:'history'});
@@ -286,9 +344,9 @@
         },
         methods: {
             inscrever: function(){
-                this.loading = true;
                 if ($("input[name='cat_ingresso']:checked").val()) {
                     if($.trim($('#nome').val()) !== ''){
+                        this.loading = true;
                         var instancia = this;
                         axios.post('/api/v1/inscricao', {
                             fb_ID: instancia.user.userID,
@@ -298,7 +356,10 @@
                         })
                         .then(function (response) {
                             instancia.loading = false;
+                            instancia.tipo_ingresso = null;
+                            instancia.nome_inscrito = null;
                             alert('Inscrição realizada com sucesso!');
+                            router.push({ name: 'inscricoes', params: { id: instancia.user.userID } });
                         })
                         .catch(function (error) {
                             instancia.loading = false;
