@@ -80,7 +80,7 @@
             <div class="col-md-12"><br></div>
             <div class="col-md-7">
                 <a href="#">
-                    <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;"  src="/img/eventos/default.png">
+                    <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;" :src="imagem">
                 </a>
             </div>
             <div class="col-md-5">
@@ -102,7 +102,7 @@
                 <div class="row my-4">
                     <div class="col-md-7">
                         <a href="#">
-                            <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;" src="/img/eventos/default.png">
+                            <img class="img-fluid rounded mb-3 mb-md-0" style="width: 100%; max-height: 360px; object-fit: cover;" :src="imagem">
                         </a>
                     </div>
                     <div class="col-md-5">
@@ -250,6 +250,9 @@
             }
         },
         computed: {
+            imagem: function(){
+                return this.evento.imagem == null ? '/img/eventos/default.png' : '/img/eventos/'+this.evento.imagem;
+            },
             data_formatada: function(){
                 return formatarData(this.evento.data_hora.date)
             },
@@ -276,6 +279,9 @@
     var evento = Vue.component('evento',{
         props: ['evento'],
         computed: {
+            imagem: function(){
+                return this.evento.imagem == null ? '/img/eventos/default.png' : '/img/eventos/'+this.evento.imagem;
+            },
             data_formatada: function(){
                 return formatarData(this.evento.data_hora.date)
             },
