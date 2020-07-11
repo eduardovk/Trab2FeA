@@ -14,6 +14,8 @@ $app->group('/v1', function() {
     $this->group('/inscricao', function() {
         $this->post('', '\App\v1\Controllers\InscricaoController:criarInscricao');
         $this->get('/{id:[0-9]+}', '\App\v1\Controllers\InscricaoController:inscricoesPorUsuario');
+        $this->put('/{id:[0-9]+}', '\App\v1\Controllers\InscricaoController:atualizarInscricao');
+        $this->delete('/{id:[0-9]+}', '\App\v1\Controllers\InscricaoController:excluirInscricao');
     });
 
     $this->group('/auth', function() {

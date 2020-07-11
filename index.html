@@ -134,15 +134,15 @@
                                         <template v-if="$root.logado">
                                             <p class="card-text">
                                                 <input type="radio" name="cat_ingresso" :id="ingresso.id" :value="ingresso.id" v-model="$root.tipo_ingresso">
-                                                <label :for="ingresso.id"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</label>
+                                                <label :for="ingresso.id"> {{ingresso.titulo}} - R$ {{$root.formatarValor(ingresso.valor)}}</label>
                                             </p>
                                         </template>
                                         <template v-else>
-                                            <p class="card-text"> {{ingresso.titulo}} - R$ {{ingresso.valor}}</p>
+                                            <p class="card-text"> {{ingresso.titulo}} - R$ {{$root.formatarValor(ingresso.valor)}}</p>
                                         </template>
                                     </template>
                                     <template v-else>
-                                        <p class="card-text"> (Esgotado) <s>{{ingresso.titulo}} - R$ {{ingresso.valor}}</s> </p>
+                                        <p class="card-text"> (Esgotado) <s>{{ingresso.titulo}} - R$ {{$root.formatarValor(ingresso.valor)}}</s> </p>
                                     </template>
                                 </template>
                                 <template v-if="this.$parent.logado">
@@ -170,31 +170,43 @@
         <div class="row">
             <div class="col-md-12 mb-4">
                 <div class="card h-100">
-                    <template v-if="loading">
-                        Carregando...
+                    <template v-if="this.$parent.logado">
+                        <template v-if="loading">
+                            Carregando...
+                        </template>
+                        <template v-else>
+                            <div class="card-body table-responsive">
+                                <h5 class="card-title">MINHAS INSCRIÇÕES</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Evento</th>
+                                        <th>Inscrito</th>
+                                        <th>Tipo de Ingresso</th>
+                                        <th>Valor</th>
+                                        <th>Pago</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                    <template v-for="inscricao in inscricoes">
+                                        <tr>
+                                            <td>{{inscricao.titulo_evento}}</td>
+                                            <td>{{inscricao.nome}}</td>
+                                            <td>{{inscricao.titulo_ingresso}}</td>
+                                            <td>R$ {{$root.formatarValor(inscricao.valor)}}</td>
+                                            <td>{{inscricao.pago == 1 ? 'Pago' : 'Pendente'}}</td>
+                                            <td>
+                                                <template v-if="inscricao.pago == 0">
+                                                    <button type="button" class="btn btn-success btn-sm" @click="pagar(inscricao)">Pagar</button>
+                                                    <button type="button" class="btn btn-danger btn-sm" @click="cancelar(inscricao.id)">Cancelar</button>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>
+                        </template>
                     </template>
                     <template v-else>
-                        <div class="card-body table-responsive">
-                            <h5 class="card-title">MINHAS INSCRIÇÕES</h5>
-                            <table class="table">
-                                <tr>
-                                    <th>Evento</th>
-                                    <th>Inscrito</th>
-                                    <th>Tipo de Ingresso</th>
-                                    <th>Valor</th>
-                                    <th>Pago</th>
-                                </tr>
-                                <template v-for="inscricao in inscricoes">
-                                    <tr>
-                                        <td>{{inscricao.titulo_evento}}</td>
-                                        <td>{{inscricao.nome}}</td>
-                                        <td>{{inscricao.titulo_ingresso}}</td>
-                                        <td>R$ {{inscricao.valor}}</td>
-                                        <td>{{inscricao.pago}}</td>
-                                    </tr>
-                                </template>
-                            </table>
-                        </div>
+                            <h3><b>Faça login para ver suas inscrições!</b></h3>
                     </template>
                 </div><br>
             </div>
@@ -281,19 +293,56 @@
                 loading: true,
             }
         },
+        methods: {
+            buscarInscricoes: function(){
+                this.loading = true;
+                var instancia = this;
+                axios.get('/api/v1/inscricao/'+instancia.$route.params.id)
+                .then(function (response) {
+                    instancia.inscricoes = response.data;
+                    instancia.loading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    instancia.loading = false;
+                })
+                .then(function () {
+                });
+            },
+            pagar: function(inscricao){ //SIMULACAO DE PAGAMENTO
+                this.loading = true;
+                var instancia = this;
+                inscricao.pago = 1;
+                axios.put('/api/v1/inscricao/'+inscricao.id, inscricao)
+                .then(function (response) {
+                    alert('Pagamento realizado com sucesso!');
+                    instancia.buscarInscricoes();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    instancia.loading = false;
+                })
+                .then(function () {
+                });
+            },
+            cancelar: function(id_inscricao){
+                this.loading = true;
+                var instancia = this;
+                axios.delete('/api/v1/inscricao/'+id_inscricao)
+                .then(function (response) {
+                    alert('Inscrição cancelada!');
+                    instancia.buscarInscricoes();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    instancia.loading = false;
+                })
+                .then(function () {
+                });
+            }
+        },
         created: function(){
-            var instancia = this;
-            axios.get('/api/v1/inscricao/'+instancia.$route.params.id)
-            .then(function (response) {
-                instancia.inscricoes = response.data;
-                instancia.loading = false;
-            })
-            .catch(function (error) {
-                console.log(error);
-                instancia.loading = false;
-            })
-            .then(function () {
-            });
+            this.buscarInscricoes();
         },
         template: '#inscricoes-container'
     });
@@ -372,6 +421,9 @@
                 else {
                     alert('Selecione o tipo de ingresso!');
                 }
+            },
+            formatarValor: function(valor){
+                return valor.replace(".", ",");
             }
         },
         router

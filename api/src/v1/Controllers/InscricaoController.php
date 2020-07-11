@@ -98,5 +98,58 @@ class InscricaoController {
         return $return;
     }
 
+    public function atualizarInscricao($request, $response, $args) {
+        $id = (int) $args['id'];
+
+        $entityManager = $this->container->get('em');
+        $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
+        $inscricao = $inscricoesRepo->find($id);
+
+        $logger = $this->container->get('logger');
+
+        if(!$inscricao){
+            $logger->warning("Inscricao {$id} nao encontrada - Nao foi possivel atualizar!");
+            throw new \Exception("Inscricao nao encontrada", 404);
+        }
+
+        $inscricao->setIdUsuario($request->getParam('id_usuario'))
+        ->setIdIngresso($request->getParam('id_ingresso'))
+        ->setNome($request->getParam('nome'))
+        ->setPago($request->getParam('pago'));
+
+        $entityManager->persist($inscricao);
+        $entityManager->flush();
+
+        $logger->info("Inscricao {$id} atualizada!", array($inscricao));
+
+        $return = $response->withJson($inscricao, 200)
+            ->withHeader('Content-type', 'application/json');
+        return $return;
+    }
+
+    public function excluirInscricao($request, $response, $args){
+        $id = (int) $args['id'];
+
+        $entityManager = $this->container->get('em');
+        $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
+        $inscricao = $inscricoesRepo->find($id);
+
+        $logger = $this->container->get('logger');
+
+        if(!$inscricao){
+            $logger->warning("Inscricao {$id} nao encontrada - Nao foi possivel deletar!");
+            throw new \Exception("Inscricao nao encontrada", 404);
+        }
+
+        $entityManager->remove($inscricao);
+        $entityManager->flush();
+
+        $logger->info("Inscricao {$id} deletada!", array($inscricao));
+
+        $return = $response->withJson(['msg' => "Deletada a inscricao {$id}"], 204)
+            ->withHeader('Content-type', 'application/json');
+        return $return;
+    }
+
 
 }
