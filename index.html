@@ -38,7 +38,7 @@
                                     <b>{{user.userName}}</b>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
-                                    <router-link :to="{name:'inscricoes', params: {id: user.userID}}" class="dropdown-item">Minhas Inscrições</router-link>
+                                    <router-link :to="{name:'inscricoes', params: {id: user.userID, token: user.userToken}}" class="dropdown-item">Minhas Inscrições</router-link>
                                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); logOut()">Sair</a>
                                 </div>
                             </li>
@@ -303,7 +303,7 @@
             buscarInscricoes: function(){
                 this.loading = true;
                 var instancia = this;
-                axios.get('/api/v1/inscricao/'+instancia.$route.params.id)
+                axios.get('/api/v1/inscricao/'+instancia.$route.params.id+'/'+instancia.$route.params.token)
                 .then(function (response) {
                     instancia.inscricoes = response.data;
                     instancia.loading = false;
@@ -319,6 +319,8 @@
                 this.loading = true;
                 var instancia = this;
                 inscricao.pago = 1;
+                inscricao.fb_ID = app.user.userID;
+                inscricao.fb_Token = app.user.userToken;
                 axios.put('/api/v1/inscricao/'+inscricao.id, inscricao)
                 .then(function (response) {
                     alert('Pagamento realizado com sucesso!');
@@ -334,7 +336,7 @@
             cancelar: function(id_inscricao){
                 this.loading = true;
                 var instancia = this;
-                axios.delete('/api/v1/inscricao/'+id_inscricao)
+                axios.delete('/api/v1/inscricao/'+id_inscricao+'/'+app.user.userID+'/'+app.user.userToken)
                 .then(function (response) {
                     alert('Inscrição cancelada!');
                     instancia.buscarInscricoes();
@@ -357,7 +359,7 @@
         {path: '/', name:'eventos', component: eventosContainer},
         {path: '/eventos', name:'eventos', component: eventosContainer},
         {path: '/evento/:id', name:'evento', component: eventoDetalhes},
-        {path: '/inscricoes/:id', name:'inscricoes', component: inscricoesContainer},
+        {path: '/inscricoes/:id/:token', name:'inscricoes', component: inscricoesContainer},
     ];
 
     const router = new VueRouter({routes, mode:'history'});
@@ -379,13 +381,27 @@
         },
         created: function(){
             if(localStorage.getItem('userName') && localStorage.getItem('userName') !== ''){
-                this.logado = true;
                 this.user.userName = localStorage.getItem('userName');
                 this.user.userToken = localStorage.getItem('userToken');
                 this.user.userID = localStorage.getItem('userID');
                 this.user.email = localStorage.getItem('email');
+                var instancia = this;
+                axios.get('https://graph.facebook.com/'+this.user.userID+'?fields=id,name&access_token=' + this.user.userToken)
+                .then(function (response) {
+                    console.log('Usuário logado!')
+                    instancia.logado = true;
+                })
+                .catch(function (error) {
+                    var res = error.response.data.error;
+                    console.log(res);
+                    if(res.error_subcode && res.error_subcode == 463){ //Token Expirado
+                        console.log('FB Token expirado.')
+                        logOut();
+                    }
+                })
+                .then(function () {
+                });
             }
-            var instancia = this;
             axios.get('/api/v1/evento')
             .then(function (response) {
                 instancia.eventos = response.data;
@@ -405,6 +421,7 @@
                         var instancia = this;
                         axios.post('/api/v1/inscricao', {
                             fb_ID: instancia.user.userID,
+                            fb_Token: instancia.user.userToken,
                             nome: instancia.nome_inscrito,
                             email: instancia.user.email,
                             id_ingresso: instancia.tipo_ingresso
@@ -414,11 +431,11 @@
                             instancia.tipo_ingresso = null;
                             instancia.nome_inscrito = null;
                             alert('Inscrição realizada com sucesso!');
-                            router.push({ name: 'inscricoes', params: { id: instancia.user.userID } });
+                            router.push({ name: 'inscricoes', params: { id: instancia.user.userID, token: instancia.user.userToken } });
                         })
                         .catch(function (error) {
                             instancia.loading = false;
-                            console.log(error);
+                            console.log(error.response.data);
                         });
                     }else{
                         alert('Informe o nome do inscrito!');

@@ -4,6 +4,7 @@ namespace App\v1\Controllers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use \App\FuncoesGerais as FuncoesGerais;
 use \App\v1\Controllers\UsuarioController as UsuarioController;
 use App\Models\Entity\Inscricao;
 use App\Models\Entity\Evento;
@@ -26,7 +27,6 @@ class InscricaoController {
         $this->container = $container;
     }
 
-
     /**
     * @param [type] $request
     * @param [type] $response
@@ -35,13 +35,17 @@ class InscricaoController {
     */
     public function inscricoesPorUsuario($request, $response, $args) {
         $fb_ID = (int) $args['id'];
+        $fb_Token = $args['token'];
         $entityManager = $this->container->get('em');
+
+        if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
+            $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
+            ->withHeader('Content-type', 'application/json');
+            return $return;
+        }
 
         $usuarioController = new UsuarioController($this->container);
         $id = $usuarioController->getUserID($fb_ID, $entityManager);
-
-        //$inscricoesRepository = $entityManager->getRepository('App\Models\Entity\Inscricao');
-        //$inscricoes = $inscricoesRepository->findBy(array('id_usuario' => $id));
 
         $RAW_QUERY = 'SELECT i.*, ci.titulo AS titulo_ingresso, ci.valor, e.titulo AS titulo_evento
         FROM inscricoes AS i INNER JOIN categorias_ingressos AS ci ON (ci.id = i.id_ingresso)
@@ -66,11 +70,19 @@ class InscricaoController {
     */
     public function criarInscricao($request, $response, $args) {
         $params = (object) $request->getParams();
-
         $entityManager = $this->container->get('em');
 
+        $fb_ID = $request->getParam('fb_ID');
+        $fb_Token = $request->getParam('fb_Token');
+
+        if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
+            $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
+            ->withHeader('Content-type', 'application/json');
+            return $return;
+        }
+
         $parametros = array(
-            'fb_ID' => $request->getParam('fb_ID'),
+            'fb_ID' => $fb_ID,
             'nome' => $request->getParam('nome'),
             'email' => $email = $request->getParam('email')
         );
@@ -101,6 +113,15 @@ class InscricaoController {
     public function atualizarInscricao($request, $response, $args) {
         $id = (int) $args['id'];
 
+        $fb_ID = $request->getParam('fb_ID');
+        $fb_Token = $request->getParam('fb_Token');
+
+        if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
+            $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
+            ->withHeader('Content-type', 'application/json');
+            return $return;
+        }
+
         $entityManager = $this->container->get('em');
         $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
         $inscricao = $inscricoesRepo->find($id);
@@ -123,12 +144,21 @@ class InscricaoController {
         $logger->info("Inscricao {$id} atualizada!", array($inscricao));
 
         $return = $response->withJson($inscricao, 200)
-            ->withHeader('Content-type', 'application/json');
+        ->withHeader('Content-type', 'application/json');
         return $return;
     }
 
     public function excluirInscricao($request, $response, $args){
         $id = (int) $args['id'];
+
+        $fb_ID = $args['fb_id'];
+        $fb_Token = $args['token'];
+
+        if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
+            $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
+            ->withHeader('Content-type', 'application/json');
+            return $return;
+        }
 
         $entityManager = $this->container->get('em');
         $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
@@ -147,7 +177,7 @@ class InscricaoController {
         $logger->info("Inscricao {$id} deletada!", array($inscricao));
 
         $return = $response->withJson(['msg' => "Deletada a inscricao {$id}"], 204)
-            ->withHeader('Content-type', 'application/json');
+        ->withHeader('Content-type', 'application/json');
         return $return;
     }
 
