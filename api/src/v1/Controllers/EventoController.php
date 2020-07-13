@@ -89,12 +89,14 @@ class EventoController {
             $logger->warning("Evento {$id} nao encontrado!");
             throw new \Exception("Evento nao encontrado", 404);
         }else{
+            // Executa query separada para buscar os ingressos do evento selecionado
             $ingressosRepo = $entityManager->getRepository('App\Models\Entity\CategoriaIngresso');
             $ingressos = $ingressosRepo->findBy(array('id_evento' => $id));
             if($ingressos){
                 foreach($ingressos as $ingresso){
                     $inscricoesRepo = $entityManager->getRepository('App\Models\Entity\Inscricao');
                     $inscricoes = $inscricoesRepo->findBy(array('id_ingresso' => $ingresso->getId()));
+                    //Calcula a quantidade de ingressos restantes com base na quantidade total - quantidade de inscricoes
                     $qtd_inscricoes = count($inscricoes);
                     $ingresso->qtd_restante = $ingresso->getQtd() - $qtd_inscricoes;
                 }

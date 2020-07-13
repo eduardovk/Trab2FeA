@@ -38,12 +38,14 @@ class InscricaoController {
         $fb_Token = $args['token'];
         $entityManager = $this->container->get('em');
 
+        // Verifica se ID e Token da conta Facebook sao validos
         if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
             $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
             ->withHeader('Content-type', 'application/json');
             return $return;
         }
 
+        // Busca o ID do usuario no bd atraves do ID da conta Facebook
         $usuarioController = new UsuarioController($this->container);
         $id = $usuarioController->getUserID($fb_ID, $entityManager);
 
@@ -55,7 +57,6 @@ class InscricaoController {
         $statement->execute();
 
         $inscricoes = $statement->fetchAll();
-
 
         $return = $response->withJson($inscricoes, 200)
         ->withHeader('Content-type', 'application/json');
@@ -75,6 +76,7 @@ class InscricaoController {
         $fb_ID = $request->getParam('fb_ID');
         $fb_Token = $request->getParam('fb_Token');
 
+        // Verifica se ID e Token da conta Facebook sao validos
         if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
             $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
             ->withHeader('Content-type', 'application/json');
@@ -87,6 +89,7 @@ class InscricaoController {
             'email' => $email = $request->getParam('email')
         );
 
+        // Se usuario nao for encontrado no bd, faz novo insert
         $id_usuario = UsuarioController::getUserID($request->getParam('fb_ID'), $entityManager);
         if(!$id_usuario){
             $id_usuario = UsuarioController::criarUsuario($parametros, $entityManager, $this->container->get('logger'));
@@ -116,6 +119,7 @@ class InscricaoController {
         $fb_ID = $request->getParam('fb_ID');
         $fb_Token = $request->getParam('fb_Token');
 
+        // Verifica se ID e Token da conta Facebook sao validos
         if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
             $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
             ->withHeader('Content-type', 'application/json');
@@ -154,6 +158,7 @@ class InscricaoController {
         $fb_ID = $args['fb_id'];
         $fb_Token = $args['token'];
 
+        // Verifica se ID e Token da conta Facebook sao validos
         if(!FuncoesGerais::validarFBToken($fb_ID, $fb_Token)){
             $return = $response->withJson('Nao foi possivel verificar a autenticidade da conta Facebook.', 401)
             ->withHeader('Content-type', 'application/json');
