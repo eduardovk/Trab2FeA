@@ -165,6 +165,7 @@ var app = new Vue({
                 }
             });
         }
+        var instancia = this;
         axios.get('/api/v1/evento')
         .then(function (response) {
             instancia.eventos = response.data;
